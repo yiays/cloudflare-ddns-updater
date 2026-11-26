@@ -1,44 +1,31 @@
 Cloudflare Dynamic DNS (DDNS) Updater
 ===
 
-Periodically checks the WAN IP address of this device by calling [a WAN IP echo server](https://ipinfo.io/ip) and submit the change to the provided Cloudflare zone and DNS record, if necessary.
+Periodically checks the WAN IP address of this device by calling [a WAN IP echo server](https://ipfy.org) or IPv6 interface information and submit the change to the provided Cloudflare zone and DNS record, if necessary.
 
 Cloudflare API:
 `https://api.cloudflare.com/client/v4/zones/:zone_id/dns_records/:dns_record_id`
 
 ```
 $ ./cloudflare-ddns-updater.py -h
-usage: cloudflare-ddns-updater.py [-h] [--frequency MIN MAX]
-                                  [--log-dir LOG_DIR]
-                                  zone_id dns_record_id api_token
+usage: cloudflare-ddns-updater.py [-h] [--ipv4_record_id IPV4_RECORD_ID] [--ipv6_record_id IPV6_RECORD_ID] [--interface INTERFACE] [--frequency MIN MAX] [--log-dir LOG_DIR] zone_id api_token
 
-Periodically checks the WAN IP address of this device by calling
-a WAN IP echo server and submit the change to the provided Cloudflare
-zone and DNS record, if necessary. Cloudflare API:
-https://api.cloudflare.com/client/v4/zones/:zone_id/dns_records/:dns_record_id
+Periodically checks the global IPv6 address of this device and updates a Cloudflare AAAA DNS record.
 
 positional arguments:
-  zone_id              The Cloudflare Zone ID where the DNS record to be
-                       modified belongs to.
-  dns_record_id        The Cloudflare DNS Record ID to be modified when the
-                       WAN IP of this device changes.
-  api_token            The token of the API created by you to manipulate DNS
-                       addresses. This information will be sent as the
-                       Authorization header to Cloudflare API. If you don't
-                       have one yet, go to your Cloudflare dashboard and
-                       create an API token with the Edit zone DNS template to
-                       get your token.
+  zone_id               The Cloudflare Zone ID.
+  api_token             Cloudflare API Token with Edit zone DNS permissions.
 
-optional arguments:
-  -h, --help           show this help message and exit
-  --frequency MIN MAX  The minimum and maximum duration (in minutes) on how
-                       frequent this script should be executed. The script is
-                       designed to randomly execute within the provided range
-                       to avoid a uniform pattern. If not set, by default, the
-                       script runs every 10 minutes.
-  --log-dir LOG_DIR    The directory where log files will be generated. The
-                       log is rotated every midnight and kept for 7 days. If
-                       not set, by default, it will log to console.
+options:
+  -h, --help            show this help message and exit
+  --ipv4_record_id IPV4_RECORD_ID
+                        The Cloudflare A DNS Record ID. Optional.
+  --ipv6_record_id IPV6_RECORD_ID
+                        The Cloudflare AAAA DNS Record ID. Optional.
+  --interface INTERFACE
+                        Optional network interface name (e.g., eth0, enp3s0) to read the stable IPv6 address from.
+  --frequency MIN MAX
+  --log-dir LOG_DIR     Directory for rotated log files.
 ```
 
 # Example to run as a service on a Raspberry Pi
@@ -123,4 +110,4 @@ $ pipenv shell
 $ ./cloudflare-ddns-updater.py -h
 ```
 
-by James Margatan
+original by James Margatan, IPv6 version by Yiays
